@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>テキサスホールデム - オールイン手札公開版</title>
+    <title>【無料】テキサスホールデム・ポーカー - スマホ対応版</title>
+    <meta name="description" content="ブラウザで無料で遊べる、アグレッシブな対戦AIを搭載したテキサスホールデム・ポーカーゲームです。スマホ・PC両対応。">
     <style>
         body {
             background-color: #1c5c3a;
@@ -12,52 +13,91 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
         }
-        h1 { margin-bottom: 5px; font-size: 24px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        h1 { 
+            margin: 5px 0 10px 0; 
+            font-size: 20px; 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
+            text-align: center;
+        }
+        /* ダッシュボードをスマホで見やすく折りたたみ対応に */
         .dashboard {
-            display: flex;
-            gap: 30px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 15px;
+            width: 100%;
+            max-width: 450px;
             margin-bottom: 15px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             background: rgba(0,0,0,0.5);
-            padding: 10px 25px;
-            border-radius: 20px;
+            padding: 12px;
+            border-radius: 15px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            box-sizing: border-box;
         }
-        .pot-display { color: #ffb830; }
+        .dashboard div { text-align: center; }
+        .pot-display { 
+            grid-column: span 2; 
+            color: #ffb830; 
+            font-size: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 4px;
+        }
+        /* 縦長スマホ画面に対応したポーカーテーブル */
         .table {
             background: radial-gradient(#2a8c54, #134028);
-            border: 8px solid #5c3a21;
-            border-radius: 150px;
-            width: 850px;
-            height: 480px;
+            border: 6px solid #5c3a21;
+            border-radius: 40px;
+            width: 100%;
+            max-width: 450px;
+            height: 55vh;
+            min-height: 360px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 15px 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
             position: relative;
         }
-        .area { display: flex; flex-direction: column; align-items: center; width: 100%; }
-        .card-row { display: flex; gap: 10px; min-height: 90px; justify-content: center; margin-top: 5px; }
+        .area { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%; 
+        }
+        /* 画面幅に応じてカードサイズが自動縮小する仕組み */
+        .card-row { 
+            display: flex; 
+            gap: 6px; 
+            min-height: 75px; 
+            justify-content: center; 
+            margin-top: 3px;
+            width: 100%;
+        }
         .card {
-            width: 60px;
-            height: 90px;
+            width: 15vw;
+            max-width: 58px;
+            height: 22.5vw;
+            max-height: 84px;
             background-color: white;
-            border-radius: 5px;
+            border-radius: 6px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
             user-select: none;
+            text-align: center;
+            line-height: 1.2;
         }
         .card.red { color: #d63031; }
         .card.black { color: #2d3436; }
@@ -66,41 +106,68 @@
                         linear-gradient(225deg, #d63031 25%, transparent 25%) -50px 0,
                         linear-gradient(45deg, #d63031 25%, transparent 25%),
                         linear-gradient(315deg, #d63031 25%, #e63946 25%);
-            background-size: 20px 20px;
+            background-size: 15px 15px;
             border: 2px solid white;
         }
-        .info { font-size: 15px; font-weight: bold; background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 10px; text-align: center; }
-        .status-msg { font-size: 13px; color: #ffb830; margin-top: 2px; height: 18px; font-weight: bold; }
-        .controls { margin-top: 15px; display: flex; gap: 10px; height: 50px; }
+        .info { font-size: 13px; font-weight: bold; background: rgba(0,0,0,0.4); padding: 3px 10px; border-radius: 8px; text-align: center; }
+        .status-msg { font-size: 12px; color: #ffb830; margin-top: 2px; height: 16px; font-weight: bold; }
+        
+        /* スマホで押しやすい左右対称の操作ボタンレイアウト */
+        .controls { 
+            margin-top: 15px; 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 10px; 
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
         button {
             background-color: #ffb830;
             border: none;
             color: #2d3436;
-            padding: 12px 20px;
+            padding: 14px 0;
             font-size: 16px;
             font-weight: bold;
-            border-radius: 20px;
+            border-radius: 12px;
             cursor: pointer;
             box-shadow: 0 4px 0 #cc9226;
             transition: 0.1s;
+            text-align: center;
+            width: 100%;
         }
         button:active { transform: translateY(4px); box-shadow: none; }
         button:disabled { background-color: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; cursor: not-allowed; transform: none !important; }
+        
+        /* 特殊ボタンは2列を撃ち抜いて1枚の大きなボタンにする */
+        button.allin, button.fold, button.reset, #start-btn {
+            grid-column: span 2;
+        }
         button.fold { background-color: #e74c3c; color: white; box-shadow: 0 4px 0 #c0392b; }
-        button.allin { background-color: #e67e22; color: white; box-shadow: 0 4px 0 #d35400; font-size: 18px; padding: 12px 28px; }
+        button.allin { background-color: #e67e22; color: white; box-shadow: 0 4px 0 #d35400; font-size: 18px; }
         button.reset { background-color: #3498db; color: white; box-shadow: 0 4px 0 #2980b9; display: none; }
-        #message { font-size: 20px; font-weight: bold; margin-top: 10px; height: 28px; text-shadow: 1px 1px 2px black; text-align: center; }
+        
+        #message { 
+            font-size: 16px; 
+            font-weight: bold; 
+            margin-top: 12px; 
+            min-height: 24px; 
+            text-shadow: 1px 1px 2px black; 
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>テキサスホールデム (手札公開・自動進行版)</h1>
+    <h1>テキサスホールデム</h1>
 
     <div class="dashboard">
-        <div>ゲーム数: <span id="game-count">1</span></div>
-        <div>現在のBB: <span id="bb-amount">300</span> $ (SB: <span id="sb-amount">150</span> $)</div>
-        <div>あなた: <span id="player-chips">10000</span> $</div>
         <div class="pot-display">💰 POT: <span id="pot-amount">0</span> $</div>
+        <div>ゲーム数: <span id="game-count">1</span></div>
+        <div>現在のBB: <span id="bb-amount">300</span> $</div>
+        <div>あなた: <span id="player-chips">10000</span> $</div>
         <div>CPU: <span id="cpu-chips">10000</span> $</div>
     </div>
 
@@ -175,7 +242,6 @@
     function updateChipsDisplay() {
         document.getElementById('game-count').innerText = gameTotalCount + 1;
         document.getElementById('bb-amount').innerText = currentBB;
-        document.getElementById('sb-amount').innerText = currentSB;
         document.getElementById('player-chips').innerText = playerChips;
         document.getElementById('cpu-chips').innerText = cpuChips;
         document.getElementById('pot-amount').innerText = pot;
@@ -320,7 +386,7 @@
             }
         } else if (action === 'raise') {
             let minRaise = currentBet + 100; 
-            let inputVal = prompt(`いくらまで引き上げますか？（現在の賭け金: ${currentBet}$ / あなたの残り: ${playerChips}$）`, minRaise);
+            let inputVal = prompt(`いくらまで引き上げますか？（現在の賭け金: ${currentBet}$ / 残り: ${playerChips}$）`, minRaise);
             
             if (inputVal === null) return; 
             let targetBet = parseInt(inputVal);
@@ -385,15 +451,12 @@
         let cpuEval = evaluate7Cards(allVisibleCards);
         let handPower = HAND_RANK[cpuEval.name]; 
 
-        // プレイヤーがオールイン状態の時
         if (isAllInState && playerChips === 0) {
             if (handPower >= 1 || Math.random() > 0.4) {
                 let callAmount = Math.min(cpuChips, currentBet - cpuBetThisRound); 
                 cpuChips -= callAmount; pot += callAmount; cpuBetThisRound += callAmount; cpuTotalBetInGame += callAmount;
                 cStatus.innerText = cpuChips === 0 ? "オールインコール！！！" : "コール";
                 updateChipsDisplay();
-                
-                // お互いのチップ（またはコール額）が揃って勝負確定 ＝ 即座に自動進行へ
                 setTimeout(autoRunRemainingCards, 1000);
             } else {
                 cStatus.innerText = "フォールド";
@@ -420,7 +483,7 @@
                     pot += cpuChips; cpuBetThisRound += cpuChips; cpuTotalBetInGame += cpuChips; cpuChips = 0; isAllInState = true;
                     cStatus.innerText = "オールインコール！";
                     updateChipsDisplay();
-                    setTimeout(autoRunRemainingCards, 1000); // ここでも勝負確定のため自動進行へ
+                    setTimeout(autoRunRemainingCards, 1000);
                 } else {
                     cpuChips -= callAmount; pot += callAmount; cpuBetThisRound = currentBet; cpuTotalBetInGame += callAmount;
                     cStatus.innerText = `コール`;
@@ -498,7 +561,7 @@
             msg.innerText = "【ターン】アクションを選択してください。";
             render(false);
             startPostFlopAction();
-        } else if (gameStage === "turn") {
+        } else if (gameStage === "flop" || gameStage === "turn") {
             gameStage = "river";
             deck.pop();
             communityCards.push(deck.pop());
@@ -519,37 +582,31 @@
         }
     }
 
-    // --- 【大幅改良】オールイン成立時の「即・手札公開」自動進行処理 ---
     function autoRunRemainingCards() {
         isAllInState = true;
-        toggleButtons(false); // ボタンロック
-        
+        toggleButtons(false); 
+        document.getElementById('player-status').innerText = "";
+        document.getElementById('cpu-status').innerText = "";
+
         let msg = document.getElementById('message');
         msg.innerText = "⚡ オールイン対決！手札公開！！ ⚡";
 
-        // 【ここがポイント】自動めくりが始まる前に、CPUの手札を即座に表向きにする(true)
         render(true); 
-        
-        // その時点の役名を画面に表示させておく
         updateLiveHandNames();
 
         let interval = setInterval(() => {
             if (communityCards.length < 5) {
-                deck.pop(); // バーンカード
+                deck.pop(); 
                 communityCards.push(deck.pop());
-                
-                // カードが開くたびに、お互いの手札を開きっぱなしで再描画
                 render(true); 
-                // カードが追加されたことで「役が変わったか」をリアルタイム更新！
                 updateLiveHandNames();
             } else {
                 clearInterval(interval);
                 setTimeout(showdown, 1500); 
             }
-        }, 1500); // 1.5秒間隔でじっくりめくる
+        }, 1500); 
     }
 
-    // 自動進行中に現在の役名をリアルタイムに表示する補助関数
     function updateLiveHandNames() {
         const pEval = evaluate7Cards(playerHand.concat(communityCards));
         const cEval = evaluate7Cards(cpuHand.concat(communityCards));
